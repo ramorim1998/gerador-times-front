@@ -1,11 +1,11 @@
 export const environment = {
   production: true,
-  apiUrl: process.env['NG_APP_API_URL'] || 'https://gerador-times-back.up.railway.app/api',
+  apiUrl: 'https://gerador-times-back.up.railway.app',
   auth0: {
-    domain: process.env['NG_APP_AUTH0_DOMAIN'] || 'seu-dominio.auth0.com',
-    clientId: process.env['NG_APP_AUTH0_CLIENT_ID'] || 'seu-client-id',
+    domain: 'dev-q8pvey4a13mwd3rg.us.auth0.com', // ← do dashboard Auth0
+    clientId: 'mCUJj3plVjDWB65dH11bKRFOwo8FYvtj', // ← do dashboard Auth0  
     authorizationParams: {
-      redirect_uri: process.env['NG_APP_AUTH0_REDIRECT_URI'] || 'https://gerador-times.netlify.app'
+      redirect_uri: 'https://gerador-times.netlify.app' // ← URL local do Ionic
     }
   }
 };
