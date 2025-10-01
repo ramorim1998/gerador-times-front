@@ -1,0 +1,10 @@
+[build]
+  publish = "www"
+  command = "npm run build"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Isso resolve sem precisar do _redirects físico
