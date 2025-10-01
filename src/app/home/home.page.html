@@ -1,20 +1,167 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+  <ion-toolbar color="primary">
+    <ion-title>Gerador de Times</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <!-- Aba de Grupos -->
+  <div *ngIf="currentTab === 'groups'">
+    <ion-list>
+      <ion-list-header>
+        <ion-label>Grupos Salvos</ion-label>
+        <ion-button fill="clear" size="small" (click)="newGroup()">
+          <ion-icon slot="start" name="add"></ion-icon>
+          Novo Grupo
+        </ion-button>
+      </ion-list-header>
+    </ion-list>
+    
+    <div *ngIf="groups.length === 0" class="empty-state">
+      <ion-icon name="people-outline" size="large"></ion-icon>
+      <p>Nenhum grupo criado ainda</p>
+      <ion-button fill="outline" (click)="newGroup()">Criar Primeiro Grupo</ion-button>
+    </div>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+    <ion-list *ngIf="groups.length > 0">
+      <ion-item *ngFor="let group of groups; let i = index" class="group-item">
+        <ion-label>
+          <h3>{{ group.name }}</h3>
+          <p>{{ group.members.length }} membro(s)</p>
+        </ion-label>
+        <ion-buttons slot="end">
+          <ion-button fill="clear" size="small" (click)="editGroup(i)">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" size="small" color="danger" (click)="deleteGroup(i)">
+            <ion-icon name="trash-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Aba de Criar/Editar Grupo -->
+  <div *ngIf="currentTab === 'edit-group'">
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Nome do Grupo</ion-label>
+        <ion-input 
+          [(ngModel)]="currentGroup.name" 
+          placeholder="Ex: Time de Futebol">
+        </ion-input>
+      </ion-item>
+      
+      <ion-list-header>
+        <ion-label>Membros do Grupo</ion-label>
+      </ion-list-header>
+
+      <ion-item *ngFor="let member of currentGroup.members; let i = index" class="person-item">
+        <ion-input 
+          [(ngModel)]="member.name" 
+          placeholder="Nome do membro">
+        </ion-input>
+        <ion-checkbox 
+          slot="end" 
+          [(ngModel)]="member.active">
+        </ion-checkbox>
+        <ion-button 
+          fill="clear" 
+          color="danger" 
+          size="small" 
+          (click)="removeMember(i)">
+          <ion-icon name="close-circle"></ion-icon>
+        </ion-button>
+      </ion-item>
+
+      <ion-item>
+        <ion-button fill="clear" slot="end" (click)="addMember()">
+          <ion-icon slot="start" name="person-add"></ion-icon>
+          Adicionar Membro
+        </ion-button>
+      </ion-item>
+
+      <ion-item>
+        <ion-button expand="block" (click)="saveGroup()">Salvar Grupo</ion-button>
+        <ion-button expand="block" fill="outline" (click)="cancelEdit()">Cancelar</ion-button>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Aba de Gerar Times -->
+  <div *ngIf="currentTab === 'generate-teams'">
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Número de Times</ion-label>
+        <ion-input 
+          type="number" 
+          [(ngModel)]="teamsCount" 
+          min="1">
+        </ion-input>
+      </ion-item>
+      
+      <ion-item>
+        <ion-label>Selecionar Grupo</ion-label>
+        <ion-select 
+          [(ngModel)]="selectedGroupIndex" 
+          placeholder="Escolha um grupo"
+          (ionChange)="onGroupSelectChange()">
+          <ion-select-option 
+            *ngFor="let group of groups; let i = index" 
+            [value]="i">
+            {{ group.name }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-list-header *ngIf="selectedGroup">
+        <ion-label>Membros (marque os que vão jogar)</ion-label>
+      </ion-list-header>
+
+      <ion-item *ngFor="let member of selectedGroup?.members; let i = index">
+        <ion-label>{{ member.name }}</ion-label>
+        <ion-checkbox 
+          slot="end" 
+          [(ngModel)]="member.active">
+        </ion-checkbox>
+      </ion-item>
+
+      <ion-item>
+        <ion-button 
+          expand="block" 
+          (click)="generateTeams()" 
+          [disabled]="!selectedGroup">
+          Gerar Times
+        </ion-button>
+      </ion-item>
+    </ion-list>
+
+    <div *ngIf="generatedTeams.length > 0" class="teams-result">
+      <ion-card *ngFor="let team of generatedTeams; let i = index" class="team-card">
+        <ion-card-header>
+          <ion-card-title class="team-title">Time {{ i + 1 }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div *ngFor="let member of team" class="team-member">• {{ member }}</div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <div *ngIf="groups.length === 0" class="empty-state">
+      <p>Nenhum grupo disponível. Crie um grupo primeiro.</p>
+    </div>
   </div>
 </ion-content>
+
+<ion-footer *ngIf="currentTab !== 'edit-group'">
+  <ion-toolbar>
+    <ion-segment [value]="currentTab" (ionChange)="onTabChange($event)">
+      <ion-segment-button value="groups">
+        <ion-label>Grupos</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="generate-teams">
+        <ion-label>Gerar Times</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-footer>

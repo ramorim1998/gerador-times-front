@@ -1,7 +1,5 @@
 {
-  "name": "gerador-times",
-  "integrations": {
-    "capacitor": {}
-  },
+  "name": "New Ionic App",
+  "integrations": {},
   "type": "angular"
 }

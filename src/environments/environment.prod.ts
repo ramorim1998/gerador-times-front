@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  apiUrl: 'https://gerador-times-backend.up.railway.app/api'
 };
