@@ -22,7 +22,8 @@ import {
   IonSegment,
   IonSegmentButton,
   IonFooter,
-  AlertController
+  AlertController,
+  IonText
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -73,7 +74,8 @@ interface Group {
     IonButtons,
     IonSegment,
     IonSegmentButton,
-    IonFooter
+    IonFooter,
+    IonText
   ]
 })
 export class HomePage implements OnInit {

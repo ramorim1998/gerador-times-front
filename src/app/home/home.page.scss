@@ -104,3 +104,44 @@ ion-input, ion-select {
   --padding-start: 12px;
   --padding-end: 12px;
 }
+
+.custom-footer {
+  ion-toolbar {
+    --background: var(--ion-color-light);
+    --border-color: var(--ion-color-light-shade);
+  }
+
+  .footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 0;
+  }
+
+  .flairtech-text {
+    font-weight: 600;
+    font-style: italic;
+  }
+
+  .flairtech-link {
+    text-decoration: none;
+    font-weight: 600;
+    color: var(--ion-color-primary);
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: var(--ion-color-primary-shade);
+    }
+  }
+
+  .footer-text {
+    font-size: 0.9em;
+    margin: 0 4px;
+  }
+}
+
+// Para não atrapalhar o conteúdo
+ion-content {
+  --padding-bottom: 70px; // Altura do footer
+}
