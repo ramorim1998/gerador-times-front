@@ -1,0 +1,7 @@
+{
+  "name": "gerador-times",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
