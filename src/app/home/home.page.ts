@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, ElementRef, OnInit, inject } from '@angular/core';
 import { 
   IonCard, 
   IonCardHeader, 
@@ -81,6 +81,8 @@ interface Group {
 export class HomePage implements OnInit {
   private groupService = inject(GroupService); // ← Injetar serviço
   private alertController = inject(AlertController);
+    private elementRef = inject(ElementRef);
+
 
   currentTab: string = 'groups';
   groups: Group[] = [];
@@ -104,6 +106,10 @@ export class HomePage implements OnInit {
 
   ngOnInit() {
     this.loadGroups();
+    setTimeout(() => {
+      const ionPage = this.elementRef.nativeElement;
+      ionPage.classList.remove('ion-page-invisible');
+    }, 0);
   }
 
   // Métodos atualizados para usar o serviço

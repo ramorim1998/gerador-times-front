@@ -145,3 +145,11 @@ ion-input, ion-select {
 ion-content {
   --padding-bottom: 70px; // Altura do footer
 }
+
+// Corrige o bug do invisible
+ion-page.ion-page-invisible,
+app-home.ion-page-invisible {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
