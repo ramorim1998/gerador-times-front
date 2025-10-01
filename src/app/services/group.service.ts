@@ -23,7 +23,7 @@ export class GroupService {
   private apiUrl = 'https://gerador-times-back.up.railway.app';
 
   getGroups(userId: string): Observable<Group[]> {
-    return this.http.get<Group[]>(`${this.apiUrl}/groups?userId=${userId}`)
+    return this.http.get<Group[]>(`${this.apiUrl}/api/groups?userId=${userId}`)
       .pipe(
         catchError(error => {
           console.log('Backend offline, usando localStorage');
@@ -33,7 +33,7 @@ export class GroupService {
   }
 
   createGroup(group: Group): Observable<Group> {
-    return this.http.post<Group>(`${this.apiUrl}/groups`, group)
+    return this.http.post<Group>(`${this.apiUrl}/api/groups`, group)
       .pipe(
         catchError(error => {
           console.log('Backend offline, salvando localmente');
@@ -44,7 +44,7 @@ export class GroupService {
   }
 
   updateGroup(id: string, group: Group): Observable<Group> {
-    return this.http.put<Group>(`${this.apiUrl}/groups/${id}`, group)
+    return this.http.put<Group>(`${this.apiUrl}/api/groups/${id}`, group)
       .pipe(
         catchError(error => {
           console.log('Backend offline, atualizando localmente');
@@ -55,7 +55,7 @@ export class GroupService {
   }
 
   deleteGroup(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/groups/${id}`)
+    return this.http.delete(`${this.apiUrl}/api/groups/${id}`)
       .pipe(
         catchError(error => {
           console.log('Backend offline, deletando localmente');
