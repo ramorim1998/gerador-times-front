@@ -31,6 +31,8 @@ import { HttpClientModule } from '@angular/common/http'; // ← Importar
 import { addIcons } from 'ionicons';
 import { add, personAdd, closeCircle, createOutline, trashOutline, peopleOutline } from 'ionicons/icons';
 import { GroupService } from '../services/group.service'; // ← Importar serviço
+import { LoginButtonComponent } from '../login-button/login-button.component';
+import { AuthService } from '../services/auth.service';
 
 interface GroupMember {
   name: string;
@@ -75,24 +77,28 @@ interface Group {
     IonSegment,
     IonSegmentButton,
     IonFooter,
-    IonText
+    IonText,
+    LoginButtonComponent,
   ]
 })
 export class HomePage implements OnInit {
   private groupService = inject(GroupService); // ← Injetar serviço
   private alertController = inject(AlertController);
-    private elementRef = inject(ElementRef);
+  private elementRef = inject(ElementRef);
 
 
   currentTab: string = 'groups';
   groups: Group[] = [];
-  currentGroup: Group = { name: '', members: [], userId: 'user-123' }; // ← Add userId
+  currentGroup: Group = { name: '', members: [], userId: '' };
   currentGroupIndex: number = -1;
   teamsCount: number = 2;
   selectedGroupIndex: number = -1;
   selectedGroup: Group | null = null;
   generatedTeams: string[][] = [];
-
+  private _authService = inject(AuthService); // ← INJETAR, não instanciar!
+  get authService(): AuthService {
+    return this._authService;
+  }
   constructor() {
     addIcons({ 
       add, 
@@ -115,7 +121,7 @@ export class HomePage implements OnInit {
   // Métodos atualizados para usar o serviço
   async loadGroups() {
     try {
-      this.groups = await this.groupService.getGroups('user-123').toPromise() || [];
+      this.groups = await this.groupService.getGroups().toPromise() || []; // ← SEM 'user-123'
     } catch (error) {
       console.error('Erro ao carregar grupos:', error);
       // Fallback para localStorage se backend não estiver disponível
@@ -181,10 +187,10 @@ export class HomePage implements OnInit {
   }
 
   newGroup() {
-    this.currentGroup = {
+this.currentGroup = {
       name: 'Novo Grupo',
       members: [],
-      userId: 'user-123'
+      userId: ''
     };
     this.currentGroupIndex = -1;
     this.currentTab = 'edit-group';

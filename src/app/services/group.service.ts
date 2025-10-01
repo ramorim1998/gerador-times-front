@@ -1,7 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { AuthService } from './auth.service'; // ← Adicionar
+import { environment } from '../../environments/environment'; // ← Adicionar
 
 interface GroupMember {
   name: string;
@@ -20,20 +22,32 @@ interface Group {
 })
 export class GroupService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://gerador-times-back.up.railway.app';
+  private authService = inject(AuthService); // ← Injetar AuthService
+  private apiUrl = environment.apiUrl; // ← Usar environment
 
-  getGroups(userId: string): Observable<Group[]> {
-    return this.http.get<Group[]>(`${this.apiUrl}/api/groups?userId=${userId}`)
+  // ✅ Método para pegar headers com token JWT
+  private getAuthHeaders() {
+    const token = this.authService.getToken(); // ← Agora existe!
+    return {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      })
+    };
+  }
+
+  getGroups(): Observable<Group[]> {
+    return this.http.get<Group[]>(`${this.apiUrl}/groups`, this.getAuthHeaders())
       .pipe(
         catchError(error => {
-          console.log('Backend offline, usando localStorage');
+          console.log('Backend offline ou não autenticado, usando localStorage');
           return of(this.getLocalGroups());
         })
       );
   }
 
   createGroup(group: Group): Observable<Group> {
-    return this.http.post<Group>(`${this.apiUrl}/api/groups`, group)
+    return this.http.post<Group>(`${this.apiUrl}/groups`, group, this.getAuthHeaders())
       .pipe(
         catchError(error => {
           console.log('Backend offline, salvando localmente');
@@ -44,7 +58,7 @@ export class GroupService {
   }
 
   updateGroup(id: string, group: Group): Observable<Group> {
-    return this.http.put<Group>(`${this.apiUrl}/api/groups/${id}`, group)
+    return this.http.put<Group>(`${this.apiUrl}/groups/${id}`, group, this.getAuthHeaders())
       .pipe(
         catchError(error => {
           console.log('Backend offline, atualizando localmente');
@@ -55,7 +69,7 @@ export class GroupService {
   }
 
   deleteGroup(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/api/groups/${id}`)
+    return this.http.delete(`${this.apiUrl}/groups/${id}`, this.getAuthHeaders())
       .pipe(
         catchError(error => {
           console.log('Backend offline, deletando localmente');
@@ -65,7 +79,7 @@ export class GroupService {
       );
   }
 
-  // Fallback para localStorage
+  // Fallback para localStorage (quando não autenticado ou backend offline)
   private getLocalGroups(): Group[] {
     const saved = localStorage.getItem('teamGroups');
     return saved ? JSON.parse(saved) : [];

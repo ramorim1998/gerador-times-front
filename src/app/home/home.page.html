@@ -5,7 +5,18 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <!-- Aba de Grupos -->
+  <div *ngIf="!(authService.isAuthenticated$ | async)" class="login-prompt">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Bem-vindo ao Gerador de Times!</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Faça login para criar e gerenciar seus grupos.</p>
+        <app-login-button></app-login-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+  <div *ngIf="authService.isAuthenticated$ | async">
   <div *ngIf="currentTab === 'groups'">
     <ion-list>
       <ion-list-header>
@@ -150,6 +161,7 @@
     <div *ngIf="groups.length === 0" class="empty-state">
       <p>Nenhum grupo disponível. Crie um grupo primeiro.</p>
     </div>
+  </div>
   </div>
 </ion-content>
 

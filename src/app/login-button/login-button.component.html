@@ -1,0 +1,9 @@
+<ion-button (click)="login()" *ngIf="!(isAuthenticated$ | async)">
+      <ion-icon slot="start" name="log-in"></ion-icon>
+      Entrar
+    </ion-button>
+    
+    <ion-button (click)="logout()" *ngIf="isAuthenticated$ | async" color="medium">
+      <ion-icon slot="start" name="log-out"></ion-icon>
+      Sair
+    </ion-button>
