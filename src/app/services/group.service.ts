@@ -20,7 +20,7 @@ interface Group {
 })
 export class GroupService {
   private http = inject(HttpClient);
-  private apiUrl = 'https:/gerador-times-back.up.railway.app';
+  private apiUrl = 'https://gerador-times-back.up.railway.app';
 
   getGroups(userId: string): Observable<Group[]> {
     return this.http.get<Group[]>(`${this.apiUrl}/groups?userId=${userId}`)
