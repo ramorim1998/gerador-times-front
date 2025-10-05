@@ -7,14 +7,15 @@ import { AppRoutingModule } from './app-routing.module';
 import { FormsModule } from '@angular/forms'; 
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [],
   imports: [
     BrowserModule, 
     IonicModule.forRoot(), 
     AppRoutingModule,
-    FormsModule 
+    FormsModule ,
+    AppComponent
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
-  bootstrap: [AppComponent],
+  bootstrap: [],
 })
 export class AppModule {}
