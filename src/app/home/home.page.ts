@@ -33,6 +33,7 @@ import { add, personAdd, closeCircle, createOutline, trashOutline, peopleOutline
 import { GroupService } from '../services/group.service'; // ← Importar serviço
 import { LoginButtonComponent } from '../login-button/login-button.component';
 import { AuthService } from '../services/auth.service';
+import { Match, MatchService, TeamStats } from '../services/match';
 
 interface GroupMember {
   name: string;
@@ -85,6 +86,7 @@ export class HomePage implements OnInit {
   private groupService = inject(GroupService); // ← Injetar serviço
   private alertController = inject(AlertController);
   private elementRef = inject(ElementRef);
+  private matchService = inject(MatchService); // ← NOVO
 
 
   currentTab: string = 'groups';
@@ -99,6 +101,17 @@ export class HomePage implements OnInit {
   get authService(): AuthService {
     return this._authService;
   }
+
+  matches: Match[] = [];
+  teamStats: TeamStats[] = [];
+  newMatch: Match = {
+    teamA: [],
+    teamB: [],
+    scoreA: 0,
+    scoreB: 0,
+    date: new Date(),
+    userId: ''
+  };
   constructor() {
     addIcons({ 
       add, 
@@ -183,6 +196,10 @@ export class HomePage implements OnInit {
     this.currentTab = event.detail.value;
     if (this.currentTab === 'generate-teams') {
       this.updateAvailableMembers();
+    }
+   else if (this.currentTab === 'matches') {
+      this.loadMatches();
+      this.loadStats();
     }
   }
 
@@ -297,5 +314,95 @@ this.currentGroup = {
     });
 
     await alert.present();
+  }
+
+  async loadMatches() {
+    try {
+      this.matches = await this.matchService.getMatches().toPromise() || [];
+    } catch (error) {
+      console.error('Erro ao carregar partidas:', error);
+    }
+  }
+
+  async loadStats() {
+    try {
+      this.teamStats = await this.matchService.getStats().toPromise() || [];
+    } catch (error) {
+      console.error('Erro ao carregar estatísticas:', error);
+    }
+  }
+
+  compareTeams(team1: string[], team2: string[]): boolean {
+    return JSON.stringify(team1?.sort()) === JSON.stringify(team2?.sort());
+  }
+
+  canRegisterMatch(): boolean {
+    return this.newMatch.teamA.length > 0 && 
+           this.newMatch.teamB.length > 0 && 
+           this.newMatch.scoreA >= 0 && 
+           this.newMatch.scoreB >= 0 &&
+           !this.areTeamsOverlapping();
+  }
+
+  areTeamsOverlapping(): boolean {
+    return this.newMatch.teamA.some(player => 
+      this.newMatch.teamB.includes(player)
+    );
+  }
+
+  async registerMatch() {
+    if (!this.canRegisterMatch()) {
+      this.showAlert('Erro', 'Preencha todos os campos corretamente e verifique se não há jogadores repetidos nos times.');
+      return;
+    }
+
+    if (this.areTeamsOverlapping()) {
+      this.showAlert('Erro', 'Os times não podem ter jogadores em comum!');
+      return;
+    }
+
+    try {
+       const matchToSave = {
+          teamA: this.normalizeTeam(this.newMatch.teamA),
+      teamB: this.normalizeTeam(this.newMatch.teamB),
+      scoreA: this.newMatch.scoreA,
+      scoreB: this.newMatch.scoreB,
+      date: new Date(),
+      userId: this.authService.getUserId()
+      };
+    console.log('🔍 Dados da partida antes do envio:', matchToSave);
+
+      await this.matchService.createMatch(matchToSave).toPromise();
+      
+      this.showAlert('Sucesso!', 'Partida registrada com sucesso!');
+      this.resetMatchForm();
+      await this.loadMatches();
+      await this.loadStats();
+      
+    } catch (error) {
+      console.error('Erro ao registrar partida:', error);
+      this.showAlert('Erro', 'Não foi possível registrar a partida.');
+    }
+  }
+  private normalizeTeam(team: any): string[] {
+    if (Array.isArray(team) && team.length > 0) {
+      // Se é array de array, pega o primeiro elemento
+      if (Array.isArray(team[0])) {
+        return team[0];
+      }
+      // Se já é array simples, retorna direto
+      return team;
+    }
+    return [];
+  }
+  resetMatchForm() {
+    this.newMatch = {
+      teamA: [],
+      teamB: [],
+      scoreA: 0,
+      scoreB: 0,
+      date: new Date(),
+      userId: ''
+    };
   }
 }

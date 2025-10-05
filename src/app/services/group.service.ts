@@ -22,12 +22,11 @@ interface Group {
 })
 export class GroupService {
   private http = inject(HttpClient);
-  private authService = inject(AuthService); // ← Injetar AuthService
-  private apiUrl = environment.apiUrl; // ← Usar environment
+  private authService = inject(AuthService);
+  private apiUrl = environment.apiUrl;
 
-  // ✅ Método para pegar headers com token JWT
   private getAuthHeaders() {
-    const token = this.authService.getToken(); // ← Agora existe!
+    const token = this.authService.getToken();
     return {
       headers: new HttpHeaders({
         'Authorization': `Bearer ${token}`,
