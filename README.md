@@ -38,5 +38,5 @@ Um aplicativo web inteligente para gerar times aleatórios e gerenciar partidas 
 ```bash
 
 
-cd backend
-npm start
+cd frontend
+ionic serve
