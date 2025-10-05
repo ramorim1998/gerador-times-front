@@ -370,7 +370,6 @@ this.currentGroup = {
       date: new Date(),
       userId: this.authService.getUserId()
       };
-    console.log('🔍 Dados da partida antes do envio:', matchToSave);
 
       await this.matchService.createMatch(matchToSave).toPromise();
       

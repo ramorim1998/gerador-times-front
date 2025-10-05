@@ -27,10 +27,6 @@ export class GroupService {
 
   private getAuthHeaders() {
     const token = this.authService.getToken();
-    console.log('🔐 Token no getAuthHeaders:', token);
-    console.log('🔐 Token existe?', !!token);
-    console.log('🔐 Token length:', token?.length);
-    console.log('🔐 URL da API:', this.apiUrl);
     return {
       headers: new HttpHeaders({
         'Authorization': `Bearer ${token}`,
@@ -82,7 +78,6 @@ export class GroupService {
       );
   }
 
-  // Fallback para localStorage (quando não autenticado ou backend offline)
   private getLocalGroups(): Group[] {
     const saved = localStorage.getItem('teamGroups');
     return saved ? JSON.parse(saved) : [];

@@ -21,18 +21,12 @@ export class AuthService {
   isLoading$ = this.auth0.isLoading$;
 
   constructor() {
-    console.log('🔐 AuthService inicializado');
     
-    // 🔥 MONITORE AS MUDANÇAS DO TOKEN
     this.auth0.idTokenClaims$.subscribe(claims => {
-      console.log('🔐 Claims atualizados:', claims);
       this.token = claims?.__raw || '';
-      console.log('🔐 Token armazenado:', this.token ? `${this.token.substring(0, 20)}...` : 'VAZIO');
     });
 
-    // Verifica se há sessão ativa ao carregar
     this.auth0.isAuthenticated$.subscribe(isAuth => {
-      console.log('🔐 Estado de autenticação:', isAuth);
       if (isAuth) {
         console.log('🔐 Usuário autenticado, buscando token...');
       }
@@ -40,7 +34,6 @@ export class AuthService {
   }
 
   login() {
-    console.log('🔐 Iniciando login...');
     this.auth0.loginWithRedirect();
   }
 
@@ -49,7 +42,6 @@ export class AuthService {
   }
 
   getToken(): string {
-    console.log('🔐 getToken() chamado, token:', this.token ? `${this.token.substring(0, 20)}...` : 'VAZIO');
     return this.token;
   }
 
